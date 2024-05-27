@@ -27,10 +27,10 @@ jobs:
         run: |
           version=$(curl -L --fail "https://hub.docker.com/v2/repositories/${{ vars.BASE_IMAGE }}/tags/?page_size=1000&name=3.18" | \
           	jq '.results | .[] | .name' -r | \
-          	sed 's/${{ matrix.tag_prefix }}//' | \
+          	sed 's/3.18//' | \
           	sort --version-sort | \
           	tail -n 1)
-          echo "value=$version" >> $GITHUB_OUTPUT
+          echo "value=3.18$version" >> $GITHUB_OUTPUT
 
       - name: Create basic vars
         id: basic
