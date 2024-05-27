@@ -20,12 +20,24 @@ jobs:
     outputs:
       prefix-test: ${{ steps.basic.outputs.prefix_test }}
       basic-image: ${{ steps.basic.outputs.basic_image }}
+      basic-tag: ${{ steps.basic.outputs.basic_tag }}
     steps:
+      - name: Get last version k0s
+        id: last_tag
+        run: |
+          version=$(curl -L --fail "https://hub.docker.com/v2/repositories/${{ vars.BASE_IMAGE }}/tags/?page_size=1000&name=3.18" | \
+          	jq '.results | .[] | .name' -r | \
+          	sed 's/${{ matrix.tag_prefix }}//' | \
+          	sort --version-sort | \
+          	tail -n 1)
+          echo "value=$version" >> $GITHUB_OUTPUT
+
       - name: Create basic vars
         id: basic
         run: |
           echo "prefix_test=test" >> $GITHUB_OUTPUT
           echo "basic_image=${{ vars.BASE_IMAGE }}" >> $GITHUB_OUTPUT
+          echo "basic_tag=${{ steps.last_tag.outputs.value }}" >> $GITHUB_OUTPUT
       
 
   run_test:
@@ -66,7 +78,7 @@ jobs:
           provenance: false
           target: local
           build-args: |
-            BASE_IMAGE=${{ needs.vars.outputs.basic-image }}
+            BASE_IMAGE=${{ needs.vars.outputs.basic-image }}:${{ needs.vars.outputs.basic-tag }}
           tags: |
             ${{ steps.image_tag_test.outputs.value }}
           cache-to: type=gha,mode=max
@@ -95,7 +107,7 @@ jobs:
           provenance: false
           target: local
           build-args: |
-            BASE_IMAGE=${{ needs.vars.outputs.basic-image }}
+            BASE_IMAGE=${{ needs.vars.outputs.basic-image }}:${{ needs.vars.outputs.basic-tag }}
           tags: |
             ${{ steps.image_tag_basic.outputs.value }}
           cache-from: type=gha
