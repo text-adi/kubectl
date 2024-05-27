@@ -2,6 +2,8 @@ ARG BASE_IMAGE
 
 FROM ${BASE_IMAGE} as builder
 
+SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
+
 RUN apk --no-cache add \
         curl=8.5.0-r0 \
     && LATEST_VERSION=$(curl -L -s https://dl.k8s.io/release/stable.txt) \
