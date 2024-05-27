@@ -44,9 +44,6 @@ jobs:
     needs: [ vars ]
     name: Run workflow - test
     uses: text-adi/base-image/.github/workflows/test.yaml@dev
-    concurrency:
-      group: ${{ github.workflow }}-${{ github.ref }}-run_manual
-      cancel-in-progress: true
 
   build_and_push:
     needs: [ vars, run_test ]
