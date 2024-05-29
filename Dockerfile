@@ -1,6 +1,4 @@
-ARG BASE_IMAGE
-
-FROM ${BASE_IMAGE} as builder
+FROM alpine:3.18 as builder
 
 SHELL ["/bin/ash", "-eo", "pipefail", "-c"]
 
